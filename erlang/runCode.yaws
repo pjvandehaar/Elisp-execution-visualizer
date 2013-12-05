@@ -1,0 +1,71 @@
+<html>
+<head>
+<title>Code Output</title>
+</head>
+<body>
+<erl>
+
+%% By Peter VandeHaar 
+%% for CS214 final project
+%% completed 2013 May 8
+
+
+
+%% BEGIN COPIED CODE from http://piotrga.wordpress.com/2010/04/02/how-to-run-a-system-command-in-erlang/
+%% run Cmd in the shell and return its output.
+run(Cmd) ->
+    run(Cmd, 5000).
+
+%% run Cmd, and throw an exception if it takes longer than Timeout milliseconds.
+run(Cmd, Timeout) ->
+    Port = erlang:open_port({spawn, Cmd},[exit_status]),
+    loop(Port, [], Timeout).
+
+%% accumulate the output of a shell program
+loop(Port, Data, Timeout) ->
+    receive
+	{Port, {data, NewData}} -> loop(Port, Data++NewData, Timeout);
+	{Port, {exit_status, 0}} -> Data;
+	{Port, {exit_status, S}} -> "Error."
+    after Timeout ->
+	    throw(timeout)
+    end.
+
+%% END COPIED CODE.
+
+%% returns the code, formatted nicely. Input is taken from /tmp/codeBoxData
+formattedCode() ->
+    run("python3 /home/peter/214/pjv9.git/finalProject/python/MEL.py --nostep /tmp/codeBoxData").
+
+%% returns the code, formatted nicely and stepped forward once. Input is taken from "/tmp/codeBoxData"
+formattedSteppedCode() ->
+    run("python3 /home/peter/214/pjv9.git/finalProject/python/MEL.py /tmp/codeBoxData").
+
+%% given the POST parameters, writes the value corresponding to the key "codeBox" to the file "/tmp/codeBoxData"
+writeCodeBoxToFile([]) ->
+    ok;
+writeCodeBoxToFile([{"codeBox",CB}|T]) ->
+    file:write_file("/tmp/codeBoxData", CB);
+writeCodeBoxToFile([H|T]) ->
+    writeCodeBoxToFile(T).
+
+%% output code!
+out(A) ->
+    P = yaws_api:parse_post(A), %% get the POST parameters
+    writeCodeBoxToFile(P), %% write the input code to a file
+    {ehtml, %% return some HTML
+     [
+      {textarea, [{id, "codeBoxId"}, {name, "codeBox"}, {form, "codeForm"}, {style, "width: 100%; height:50%; display:none"}],
+       formattedSteppedCode()},
+      {form, [{method, "post"}, {action, "/runCode.yaws"}, {id, "codeForm"}, {style, "float:left"}],
+       {input, [{type, "submit"}, {value, "Step Forward"}]}},
+      {a, [{href, "#"}, {onclick, "document.getElementById('codeBoxId').style.display='block'"}, {style, "padding:20px"}], "Edit Code"},
+      {pre, [{style, "background:#5e6; padding:0.5em; width:48%; float:left;  margin:0; clear:both"}],
+       formattedCode()},
+      {pre, [{style, "background:#3bf;  padding:0.5em; width:48%; float:right; margin:0"}],
+       formattedSteppedCode()}
+     ]}.
+
+</erl>
+</body>
+</html>

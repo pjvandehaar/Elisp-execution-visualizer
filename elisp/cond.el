@@ -1,0 +1,7 @@
+(defun yearCode (yearStr) 
+  (cond ((equal yearStr "Freshman") 1)
+        ((equal yearStr "Sophomore") 2)
+        ((equal yearStr "Junior") 3)
+        ((equal yearStr "Senior") 4)
+        (t 0)))
+(yearCode "Junior")

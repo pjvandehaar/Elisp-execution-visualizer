@@ -1,0 +1,16 @@
+<html>
+  <head>
+    <title>Input code</title>
+  </head>
+  <body>
+    <p>
+      <textarea name="codeBox" form="codeForm" style="width:100%; height:50%"></textarea>
+      <form method="post"
+            action="/runCode.yaws"
+	    id="codeForm">
+	<input type="submit" value="Submit" />
+      </form>
+    </p>
+  </body>
+</html>
+

@@ -1,0 +1,5 @@
+(and t nil)
+(and nil t)
+(and)
+(and 5 (+ 4 3) nil)
+(and 1 2 3)
