@@ -15,3 +15,9 @@ See `samplerun.txt` for an example of a session.
 * optional:
     * erlang
     * yaws
+
+## See Also
+
+[DrRacket's Algebraic Stepper](http://docs.racket-lang.org/stepper)
+
+- DrRacket's Stepper perfectly implements the idea behind this project. Unfortunately, it is only for a subset of Racket, not ELisp.
